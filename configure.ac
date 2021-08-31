@@ -3212,6 +3212,33 @@ fi
 ## Read-only HDFS files are not built if not required.
 AM_CONDITIONAL([HDFS_VFD_CONDITIONAL], [test "X$HAVE_LIBHDFS" = "Xyes"])
 
+
+## ----------------------------------------------------------------------
+## Check if Onion virtual file driver is enabled by --enable-onion-vfd
+##
+AC_SUBST([ONION_VFD])
+
+## Default is no Onion VFD
+ONION_VFD=no
+
+AC_ARG_ENABLE([onion-vfd],
+              [AS_HELP_STRING([--enable-onion-vfd],
+                              [Build the Onion virtual file driver (VFD). [default=no]])],
+              [ONION_VFD=$enableval], [ONION_VFD=no])
+
+## AC_MSG_CHECKING([if the Onion virtual file driver (VFD) is enabled])
+if test "X$ONION_VFD" = "Xyes"; then
+   AC_DEFINE([HAVE_ONION_VFD], [1],
+            [Define whether the Onion virtual file driver (VFD) should be compiled])
+    AC_MSG_RESULT([yes])
+else
+    AC_MSG_RESULT([no])
+    ONION_VFD=no
+fi
+
+## Onion files are not built if not required.
+AM_CONDITIONAL([ONION_VFD_CONDITIONAL], [test "X$ONION_VFD" = "Xyes"])
+
 ## Checkpoint the cache
 AC_CACHE_SAVE
 

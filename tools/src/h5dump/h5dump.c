@@ -50,6 +50,21 @@ static H5FD_hdfs_fapl_t hdfs_fa_g = {
 };
 #endif /* H5_HAVE_LIBHDFS */
 
+#ifdef H5_HAVE_ONION_VFD
+static H5FD_onion_fapl_info_t onion_fa_g = {
+        H5FD_ONION_FAPL_INFO_MAGIC,
+        H5FD_ONION_FAPL_INFO_VERSION_CURR,
+        H5P_DEFAULT,                       /* backing_fapl_id                */
+        (uint32_t)32,                       /* page_size                      */
+        H5FD_ONION_STORE_TARGET_ONION,     /* store_target                   */
+        H5FD_ONION_FAPL_INFO_REVISION_ID_LATEST,
+        0,                                 /* force_write_open               */
+        0,                                 /* creation_flags                 */
+        "indoor speaking voices",          /* comment                        */
+};
+#endif
+static int64_t onion_revision_g = -1;
+
 /* module-scoped variables for XML option */
 #define DEFAULT_XSD "http://www.hdfgroup.org/HDF5/XML/schema/HDF5-File.xsd"
 #define DEFAULT_DTD "http://www.hdfgroup.org/HDF5/XML/DTD/HDF5-File.dtd"
@@ -1341,7 +1356,9 @@ end_collect:
             case '3':
                 vol_info_g.info_string = H5_optarg;
                 break;
-
+            case 'F':
+		onion_revision_g = atol(H5_optarg);
+		break;
             case '?':
             default:
                 usage(h5tools_getprogname());
@@ -1480,6 +1497,16 @@ main(int argc, const char *argv[])
             goto done;
 #endif
         }
+	else if (!HDstrcmp(driver_name_g, drivernames[ONION_VFD_IDX])) {
+#ifdef H5_HAVE_ONION_VFD
+	    onion_fa_g.revision_id = onion_revision_g;
+	    vfd_info.info = (void *)&onion_fa_g;
+#else
+	    error_msg("Onion VFD not enabled.\n");
+	    h5tools_setstatus(EXIT_FAILURE);
+	    goto done;
+#endif
+	}
 
         if ((fapl_id = h5tools_get_fapl(H5P_DEFAULT, NULL, &vfd_info)) < 0) {
             error_msg("unable to create FAPL for file access\n");

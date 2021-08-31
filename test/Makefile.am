@@ -64,7 +64,8 @@ TEST_PROG= testhdf5 \
            external efc objcopy objcopy_ref links unlink twriteorder big mtime \
            fillval mount \
            flush1 flush2 app_ref enum set_extent ttsafe enc_dec_plist \
-           enc_dec_plist_cross_platform getname vfd ros3 s3comms hdfs ntypes \
+           enc_dec_plist_cross_platform getname vfd ros3 s3comms hdfs onion \
+	   ntypes \
            dangle dtransform reserved cross_read freespace mf vds file_image \
            unregister cache_logging cork swmr thread_id vol timer event_set
 
